@@ -56,3 +56,14 @@ bin/streamlit run cvbot.py
 
 In any case you choose, the application requires the `OPENAPI_API_KEY` and `CVPARTNER_API_KEY` environment variables to
 set. Make sure `.streamlit/secrets.toml` is configured (see above).
+
+# Resources
+
+* OpenAI
+  * [Assistants Overview](https://platform.openai.com/docs/assistants/overview)
+  * [Prompt Engineering](https://platform.openai.com/docs/guides/prompt-engineering)
+* Streamlit
+  * [Docs](https://docs.streamlit.io/)
+  * [Cheat sheet](https://cheat-sheet.streamlit.app/)
+* CV Partner
+  * API: https://docs.cvpartner.com/

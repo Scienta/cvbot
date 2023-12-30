@@ -1,0 +1,33 @@
+#!/bin/sh
+
+url="$1"
+output="$2"
+
+if [ "$url" = "" ]
+then
+  echo "usage: $0 [url] <output>"
+fi
+
+output_orig="$output"
+if [ "$output" = "" ]
+then
+  output=/dev/stdout
+else
+  output="${output}.tmp"
+  dir="${output%/*}"
+  mkdir -p "$dir"
+fi
+
+if command -v wget > /dev/null; then
+  wget -O "$output" "$url"
+elif command -v curl > /dev/null; then
+  curl "$url" > "$output"
+else
+  echo "$0: neither curl nor wget found"
+  exit 1
+fi
+
+if [ "$output_orig" != "" ]
+then
+  mv "$output" "$output_orig"
+fi

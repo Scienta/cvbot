@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -euo pipefail
+
+self="${0##*/}"
+dir="${0%/*}"
+
+version="7.1.0"
+url="https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/$version/openapi-generator-cli-$version.jar"
+jar="$dir/.openapi-generator-cli/$version/openapi-generator-cli.jar"
+
+if [[ ! -r $jar ]]
+then
+  "$dir/http-get" "$url" "$jar"
+fi
+
+exec java -jar "$jar" "$@"

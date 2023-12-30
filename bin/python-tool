@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -euo pipefail
+
+basedir="${0%/*}"
+self="${0##*/}"
+cmd="$basedir/env/bin/$self"
+
+if [[ ! -x $cmd ]]
+then
+  if [[ ! -d $basedir/env ]]
+  then
+    virtualenv --python=python3 $basedir/env
+  fi
+
+  if [[ ! -e $basedir/env/.cookie || $basedir/requirements.txt -nt $basedir/env/.cookie ]]
+  then
+    $basedir/env/bin/pip install -r $basedir/requirements.txt
+    touch $basedir/env/.cookie
+  fi
+fi
+
+if [[ "$self" == "python-tool" ]]
+then
+  echo "$0: Setup complete"
+  exit 0
+fi
+
+exec "$cmd" "${@}"

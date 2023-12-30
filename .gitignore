@@ -7,5 +7,4 @@ bin/.*
 tmp.*
 tmp
 
-scienta/cvpartner_api
 .streamlit/secrets.toml

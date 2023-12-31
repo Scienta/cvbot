@@ -220,17 +220,15 @@ def run_app():
         st.markdown(f"* Id: {assistant.id}")
         st.markdown(f"* Model: {assistant.model}")
         st.markdown(f"* Name: {assistant.name}")
-        st.write("Instructions:")
-        st.markdown(assistant.instructions)
+        instructions = "\n".join([f"> {l}" for l in assistant.instructions.splitlines()])
+        st.markdown(f"Instructions:\n{instructions}")
 
     with st.expander(label="Example prompts", expanded=True):
         for p in example_prompts:
             st.write(f"* {p}")
 
     if "messages" not in st.session_state:
-        st.session_state["messages"] = [
-            {"role": "assistant", "content": assistant.instructions}
-        ]
+        st.session_state["messages"] = []
 
     global messages_container
     messages_container = st.container()

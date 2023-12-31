@@ -207,7 +207,7 @@ def run_app():
     def submit_message():
         s = st.session_state.input_text
 
-        append_message("user", f"_{datetime.datetime.now()}:_\n\n{s}")
+        append_message("user", s)
         logger.info(f"Sending message: {s}")
 
         process_message(s)

@@ -32,7 +32,7 @@ def get_assistant() -> openai.types.beta.Assistant:
         st.error("Missing required environment variable: ASSISTANT_ID")
         st.stop()
 
-    info("Loading assistant")
+    logger.info("Loading assistant")
     assistant = client.beta.assistants.retrieve(assistant_id=assistant_id)
     logger.info(f"Assistant: {assistant.model_dump_json(indent=2)}")
     return assistant
@@ -50,9 +50,9 @@ def get_thread() -> openai.types.beta.Thread:
 
 @st.cache_data()
 def create_thread() -> openai.types.beta.Thread:
-    info("Creating thread")
+    logger.info("Creating thread")
     thread = client.beta.threads.create()
-    info(f"Created thread: {thread.id}")
+    logger.info(f"Created thread: {thread.id}")
     show_json(thread)
     return thread
 
@@ -75,19 +75,14 @@ def show_json(obj):
     logger.debug(s)
 
 
-def info(s: str):
-    # print(f"{datetime.datetime.now()}: {s}")
-    logger.info(s)
-
-
 def run_tool_call(function: required_action_function_tool_call.Function):
     m = f"Calling function {function.name} with arguments: {function.arguments}"
-    info(m)
+    logger.info(m)
     append_message("ai", m)
 
     s = fs.run_tool_call(function.name, function.arguments)
 
-    info(f"Response: {s}")
+    logger.info(f"Response: {s}")
 
     return s
 
@@ -99,7 +94,7 @@ def process_message(s: str):
         if run.required_action is None:
             break
 
-        info("Got a required action")
+        logger.info("Got a required action")
         show_json(run.required_action)
 
         tcs = run.required_action.submit_tool_outputs.tool_calls
@@ -111,7 +106,7 @@ def process_message(s: str):
                 output=s,
             ))
 
-        info("Submitting tool outputs")
+        logger.info("Submitting tool outputs")
         run = client.beta.threads.runs.submit_tool_outputs(
             thread_id=get_thread().id,
             run_id=run.id,
@@ -122,7 +117,7 @@ def process_message(s: str):
     messages = client.beta.threads.messages.list(
         thread_id=get_thread().id, order="asc", after=message.id
     )
-    info(f"message page size {len(messages.data)}, json:")
+    logger.info(f"message page size {len(messages.data)}, json:")
     show_json(messages)
 
     for m in messages.data:
@@ -131,12 +126,12 @@ def process_message(s: str):
                 txt: MessageContentText = content
                 append_message("ai", txt.text.value)
             else:
-                info(f"Unsupported content type: {content.type}")
+                logger.info(f"Unsupported content type: {content.type}")
 
 
 def wait_on_run(run):
     while run.status == "queued" or run.status == "in_progress":
-        info(f"Waiting for run: {run.status}")
+        logger.info(f"Waiting for run: {run.status}")
 
         run = client.beta.threads.runs.retrieve(
             thread_id=get_thread().id,
@@ -144,19 +139,19 @@ def wait_on_run(run):
         )
         time.sleep(0.5)
 
-    info(f"Run is ready: {run.status}")
+    logger.info(f"Run is ready: {run.status}")
 
     return run
 
 
 def run_message(q) -> tuple[Run, ThreadMessage]:
-    info("Creating message")
+    logger.info("Creating message")
     message = client.beta.threads.messages.create(
         thread_id=get_thread().id,
         role="user",
         content=q,
     )
-    info(f"Message id {message.id}")
+    logger.info(f"Message id {message.id}")
     show_json(message)
 
     functions = [
@@ -165,7 +160,7 @@ def run_message(q) -> tuple[Run, ThreadMessage]:
         fs.get_resume,
     ]
 
-    info("Creating run")
+    logger.info("Creating run")
     run = client.beta.threads.runs.create(
         thread_id=get_thread().id,
         assistant_id=get_assistant().id,
@@ -196,7 +191,7 @@ except OpenAIError:
 
 logger = streamlit.logger.get_logger(__name__)
 
-info("evaluating!")
+logger.info("evaluating!")
 
 scienta.openai_functions.client = scienta.cv_db.CvPartnerClient(get_cvpartner_api())
 scienta.openai_functions.logger = streamlit.logger.get_logger("openai_functions")
@@ -213,7 +208,7 @@ def run_app():
         s = st.session_state.input_text
 
         append_message("user", f"_{datetime.datetime.now()}:_\n\n{s}")
-        info(f"Sending message: {s}")
+        logger.info(f"Sending message: {s}")
 
         process_message(s)
 

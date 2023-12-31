@@ -4,6 +4,7 @@ import sys
 import time
 
 import openai.types.beta
+import scienta.cvpartner_api
 import streamlit as st
 import streamlit.logger
 from openai import OpenAI, OpenAIError
@@ -11,9 +12,8 @@ from openai.types.beta.threads import required_action_function_tool_call, Run, T
     run_submit_tool_outputs_params, MessageContentText
 from streamlit.delta_generator import DeltaGenerator
 
-import scienta.openai_functions as fs
 import scienta.cv_db
-import scienta.cvpartner_api
+import scienta.openai_functions as fs
 
 example_prompts = [
     # "List all people in Scienta. Format it as a Markdown output and sort the list of names.",

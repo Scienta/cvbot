@@ -1,5 +1,4 @@
-all:
-	echo Use a specific target
+all: requirements-frozen.txt
 
 cvpartner: cvpartner-api.yml
 	rm -rf cvpartner.tmp
@@ -8,3 +7,5 @@ cvpartner: cvpartner-api.yml
 	cp -r cvpartner.tmp/scienta/cvpartner_api scienta/cvpartner_api
 	rm -rf cvpartner.tmp
 
+requirements-frozen.txt: requirements.txt
+	bin/env/bin/pip freeze > $@

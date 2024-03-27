@@ -1,26 +1,27 @@
-# app/Dockerfile
+# syntax=docker/dockerfile:1.7-labs
+# Based on https://gilgi.org/blog/python-docker-slim/
 
-FROM python:3.12-slim
+FROM python:3.12 AS dep-builder
 
+COPY requirements-frozen.txt /build/requirements.txt
+RUN pip wheel --no-deps -w /build/dist -r /build/requirements.txt
+
+# base image: installs wheels for all dependencies
+FROM python:3.12-slim AS base
+
+# copy all wheels from builder and install
+COPY --from=dep-builder [ "/build/dist/*.whl", "/install/" ]
+RUN pip install --no-index /install/*.whl \
+    && rm -rf /install
+
+FROM base AS final
+
+RUN adduser --home /app --disabled-password app
+USER app
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    software-properties-common \
-    virtualenv \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN adduser --home /app app && chown -R app:app /app
-
-USER app
-ENV PATH="/app/env/bin:$PATH"
-
-RUN virtualenv env
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
-
-COPY ./* ./
+COPY --parents ./.streamlit ./* ./
+RUN find $(pwd)
 
 EXPOSE 8080
 

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cvname"
+version = "0.0.1"
+authors = [
+  { name="Trygve Laugstøl", email="trygvis@inamo.no" },
+]
+description = "Scienta's OpenCI and CVPartner backed CVBot"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[project.urls]
+Homepage = "https://github.com/scienta/cvbot"
+Issues = "https://github.com/scienta/cvbot/issues"

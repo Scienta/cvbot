@@ -8,7 +8,7 @@ import streamlit as st
 import streamlit.logger
 from openai import OpenAI, OpenAIError
 from openai.types.beta.threads import required_action_function_tool_call, Run, Message, \
-    run_submit_tool_outputs_params, MessageContent
+    run_submit_tool_outputs_params, MessageContent, TextContentBlock
 from streamlit.delta_generator import DeltaGenerator
 
 import scienta.cv_db
@@ -121,8 +121,8 @@ def process_message(s: str):
 
     for m in messages.data:
         for content in m.content:
-            if isinstance(content, MessageContent):
-                txt: MessageContent = content
+            if isinstance(content, TextContentBlock):
+                txt: TextContentBlock = content
                 append_message("ai", txt.text.value)
             else:
                 logger.info(f"Unsupported content type: {content.type}")
@@ -177,8 +177,8 @@ def append_message(role: str, content: str):
     st.session_state.messages.append(
         {"role": role, "content": content}
     )
-    messages_container.chat_message(role).write(content)
-
+    with messages_container.chat_message(role):
+        st.write(content)
 
 try:
     client = OpenAI()

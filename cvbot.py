@@ -3,15 +3,15 @@ import sys
 import time
 
 import openai.types.beta
-import scienta.cvpartner_api
 import streamlit as st
 import streamlit.logger
 from openai import OpenAI, OpenAIError
 from openai.types.beta.threads import required_action_function_tool_call, Run, Message, \
-    run_submit_tool_outputs_params, MessageContent, TextContentBlock
+    run_submit_tool_outputs_params, TextContentBlock
 from streamlit.delta_generator import DeltaGenerator
 
 import scienta.cv_db
+import scienta.cvpartner_api
 import scienta.openai_functions as fs
 
 example_prompts = [
@@ -90,14 +90,18 @@ def process_message(s: str):
     run, message = run_message(s)
 
     if run.usage:
-        append_message("ai", f"Prompt tokens: {run.usage.prompt_tokens}, completion tokens: {run.usage.completion_tokens}")
+        append_message("ai",
+                       f"Prompt tokens: {run.usage.prompt_tokens}, "
+                       f"completion tokens: {run.usage.completion_tokens}")
 
-    if run.status != 'completed':
+    if run.status != 'completed' and run.status != 'requires_action':
         err = run.last_error
         if err is not None:
-            st.error(f"OpenAI call failed: code={err.code}, message: {err.message}")
+            m = f"OpenAI call failed: code={err.code}, message: {err.message}"
         else:
-            st.error(f"OpenAI call failed with unknown status: {run.status}")
+            m = f"OpenAI call failed with unknown status: {run.status}"
+        logger.error(m)
+        st.error(m)
 
     while True:
         if run.required_action is None:
@@ -189,6 +193,7 @@ def append_message(role: str, content: str):
     )
     with messages_container.chat_message(role):
         st.write(content)
+
 
 try:
     client = OpenAI()

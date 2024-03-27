@@ -6,5 +6,7 @@ headless = true
 folderWatchBlacklist = ["log"]
 
 [logger]
-level = "debug"
+level = "info"
+messageFormat = "%(levelname)-7s %(name)-40s - %(message)s"
+
 #messageFormat = "%(asctime)s %(levelname)-7s %(name)-40s - %(message)s"

@@ -1,4 +1,3 @@
-import datetime
 import os
 import sys
 import time
@@ -8,8 +7,8 @@ import scienta.cvpartner_api
 import streamlit as st
 import streamlit.logger
 from openai import OpenAI, OpenAIError
-from openai.types.beta.threads import required_action_function_tool_call, Run, ThreadMessage, \
-    run_submit_tool_outputs_params, MessageContentText
+from openai.types.beta.threads import required_action_function_tool_call, Run, Message, \
+    run_submit_tool_outputs_params, MessageContent
 from streamlit.delta_generator import DeltaGenerator
 
 import scienta.cv_db
@@ -122,8 +121,8 @@ def process_message(s: str):
 
     for m in messages.data:
         for content in m.content:
-            if isinstance(content, MessageContentText):
-                txt: MessageContentText = content
+            if isinstance(content, MessageContent):
+                txt: MessageContent = content
                 append_message("ai", txt.text.value)
             else:
                 logger.info(f"Unsupported content type: {content.type}")
@@ -144,7 +143,7 @@ def wait_on_run(run):
     return run
 
 
-def run_message(q) -> tuple[Run, ThreadMessage]:
+def run_message(q) -> tuple[Run, Message]:
     logger.info("Creating message")
     message = client.beta.threads.messages.create(
         thread_id=get_thread().id,

@@ -6,6 +6,7 @@ from typing import List, Dict, Callable, Any, Type
 
 import pydantic
 from openai.types.beta.threads import run_create_params
+from openai.types.beta.function_tool import FunctionTool
 from pydantic import BaseModel, Field
 
 import scienta.cvpartner_api
@@ -65,7 +66,7 @@ class AiFunction:
 
         return s
 
-    def to_tool(self) -> run_create_params.ToolAssistantToolsFunction:
+    def to_tool(self) -> FunctionTool:
         return {
             "type": "function",
             "function": {

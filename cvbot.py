@@ -89,6 +89,16 @@ def run_tool_call(function: required_action_function_tool_call.Function):
 def process_message(s: str):
     run, message = run_message(s)
 
+    if run.usage:
+        append_message("ai", f"Prompt tokens: {run.usage.prompt_tokens}, completion tokens: {run.usage.completion_tokens}")
+
+    if run.status != 'completed':
+        err = run.last_error
+        if err is not None:
+            st.error(f"OpenAI call failed: code={err.code}, message: {err.message}")
+        else:
+            st.error(f"OpenAI call failed with unknown status: {run.status}")
+
     while True:
         if run.required_action is None:
             break

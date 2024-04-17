@@ -11,6 +11,9 @@ servers:
       subdomain:
         default: ""
 
+security:
+  - bearerAuth: []
+
 paths:
   /api/v3/cvs/{user_id}/{cv_id}:
     get:
@@ -639,3 +642,8 @@ components:
       properties:
         url:
           type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

@@ -64,7 +64,7 @@ def get_cvpartner_api():
         st.stop()
 
     api_client = scienta.cvpartner_api.ApiClient()
-    api_client.set_default_header("Authorization", f"Bearer {cvpartner_api_key}")
+    api_client.configuration.access_token = cvpartner_api_key
     api_client.configuration.server_variables["subdomain"] = "scienta"
     return scienta.cvpartner_api.DefaultApi(api_client=api_client)
 

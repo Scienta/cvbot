@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1.7-labs
 # Based on https://gilgi.org/blog/python-docker-slim/
 
-FROM python:3.12 AS dep-builder
+FROM python:3.11 AS dep-builder
 
 COPY requirements-frozen.txt /build/requirements.txt
 RUN pip wheel --no-deps -w /build/dist -r /build/requirements.txt
 
 # base image: installs wheels for all dependencies
-FROM python:3.12-slim AS base
+FROM python:3.11-slim AS base
 
 # copy all wheels from builder and install
 COPY --from=dep-builder [ "/build/dist/*.whl", "/install/" ]
